@@ -25,14 +25,7 @@ func Register(repo repository.UserRepository) gin.HandlerFunc {
 			return
 		}
 
-		user, err := repo.GetUser(ctx, registerReq.Email)
-
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": "error get user",
-			})
-			return
-		}
+		user, _ := repo.GetUser(ctx, registerReq.Email)
 
 		if user.ID != uuid.Nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
