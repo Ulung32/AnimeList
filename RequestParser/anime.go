@@ -11,6 +11,7 @@ type AnimeRequest struct {
 	Title      string
 	Synopsis   string
 	RelaseDate string
+	UserID     uuid.UUID
 }
 
 func (req AnimeRequest) ParseRequest() (model.Anime, error) {
@@ -24,6 +25,7 @@ func (req AnimeRequest) ParseRequest() (model.Anime, error) {
 		Title:      req.Title,
 		Synopsis:   req.Synopsis,
 		RelaseDate: date,
+		UserID:     req.UserID,
 	}, nil
 }
 
@@ -38,5 +40,6 @@ func (req AnimeRequest) ParseRequestWithID(ID uuid.UUID) (model.Anime, error) {
 		Title:      req.Title,
 		Synopsis:   req.Synopsis,
 		RelaseDate: date,
+		UserID:     req.UserID,
 	}, nil
 }
