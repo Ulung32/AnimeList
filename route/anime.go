@@ -12,4 +12,6 @@ func AnimeRoute(r *gin.Engine, repo repository.RepositoryLogic) {
 
 	animeGroup.GET("/", controller.GetAllAnime(repo))
 	animeGroup.POST("/", controller.AddAnime(repo))
+	animeGroup.PUT("/:id", controller.EditAnime(repo))
+	animeGroup.DELETE("/:id", controller.DeleteAnime(repo))
 }
