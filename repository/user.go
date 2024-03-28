@@ -7,6 +7,7 @@ import (
 
 type UserRepository interface {
 	CreateUser(ctx context.Context, user model.User) error
+	GetUser(ctx context.Context, email string) (model.User, error)
 }
 
 func (r Repository) CreateUser(ctx context.Context, user model.User) error {
@@ -17,4 +18,15 @@ func (r Repository) CreateUser(ctx context.Context, user model.User) error {
 	}
 
 	return nil
+}
+
+func (r Repository) GetUser(ctx context.Context, email string) (model.User, error) {
+	var user model.User
+	err := r.DB.First(&user, "email = ?", email).Error
+
+	if err != nil {
+		return model.User{}, err
+	}
+
+	return user, nil
 }

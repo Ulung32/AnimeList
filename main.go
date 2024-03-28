@@ -14,20 +14,20 @@ import (
 )
 
 func main() {
-	config, err := config.LoadConfig()
+	err := config.LoadConfig()
 	if err != nil {
 		log.Fatal("cannot load config: ", err)
 	}
-	fmt.Println(config.DBUrl)
+	fmt.Println(config.Cfg.DBUrl)
 
-	db, err := gorm.Open(postgres.Open(config.DBUrl), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(config.Cfg.DBUrl), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
 
 	r := gin.Default()
 
-	db.AutoMigrate(&model.Anime{})
+	db.AutoMigrate(&model.Anime{}, &model.User{})
 	repo := repository.NewRepository(db)
 
 	route.Routes(r, repo)

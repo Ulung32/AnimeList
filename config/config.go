@@ -3,10 +3,13 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
-	DBUrl string `mapstructure:"DATABASE_URL"`
+	DBUrl     string `mapstructure:"DATABASE_URL"`
+	SecretKey string `mapstructure:"SECRET"`
 }
 
-func LoadConfig() (config Config, err error) {
+var Cfg *Config
+
+func LoadConfig() (err error) {
 	viper.AddConfigPath("./.")
 	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
@@ -18,6 +21,8 @@ func LoadConfig() (config Config, err error) {
 		return
 	}
 
-	err = viper.Unmarshal(&config)
+	Cfg = &Config{}
+
+	err = viper.Unmarshal(Cfg)
 	return
 }

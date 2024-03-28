@@ -8,4 +8,5 @@ import (
 
 func Routes(r *gin.Engine, repo repository.Repository) {
 	AnimeRoute(r, repo)
+	UserRoute(r, repo)
 }
