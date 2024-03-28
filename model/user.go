@@ -9,4 +9,5 @@ type User struct {
 	Email    string    `gorm:"unique"`
 	Username string
 	Password string
+	Anime    []Anime
 }
