@@ -40,6 +40,6 @@ func (req AnimeRequest) ParseRequestWithID(ID uuid.UUID) (model.Anime, error) {
 		Title:      req.Title,
 		Synopsis:   req.Synopsis,
 		RelaseDate: date,
-		UserID:     req.UserID,
+		// UserID:     req.UserID,
 	}, nil
 }

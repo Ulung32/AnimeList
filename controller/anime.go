@@ -34,7 +34,20 @@ func GetAnime(repo repository.AnimeRepository) gin.HandlerFunc {
 
 func GetAllAnime(repo repository.AnimeRepository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		animes, err := repo.GetAllAnime(ctx)
+		userID, exists := ctx.Get("userid")
+		if !exists {
+			ctx.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		userIDStr, ok := userID.(string)
+
+		if !ok {
+			ctx.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		animes, err := repo.GetAllAnime(ctx, userIDStr)
 
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "couldnt retrive data"})
@@ -56,7 +69,26 @@ func AddAnime(repo repository.AnimeRepository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var reqBody requestparser.AnimeRequest
 
-		err := ctx.BindJSON(&reqBody)
+		userID, exists := ctx.Get("userid")
+		if !exists {
+			ctx.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		userIDStr, ok := userID.(string)
+		if !ok {
+			ctx.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		// Parse userIDStr into a UUID type
+		userIDUUID, err := uuid.Parse(userIDStr)
+		if err != nil {
+			ctx.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		err = ctx.BindJSON(&reqBody)
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
@@ -66,6 +98,8 @@ func AddAnime(repo repository.AnimeRepository) gin.HandlerFunc {
 		}
 
 		anime, err := reqBody.ParseRequest()
+
+		anime.UserID = userIDUUID
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
@@ -91,11 +125,30 @@ func AddAnime(repo repository.AnimeRepository) gin.HandlerFunc {
 
 func EditAnime(repo repository.AnimeRepository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		userID, exists := ctx.Get("userid")
+		if !exists {
+			ctx.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		userIDStr, ok := userID.(string)
+		if !ok {
+			ctx.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		userIDUUID, err := uuid.Parse(userIDStr)
+
+		if err != nil {
+			ctx.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
 		ID := ctx.Param("id")
 
 		var reqBody requestparser.AnimeRequest
 
-		err := ctx.BindJSON(&reqBody)
+		err = ctx.BindJSON(&reqBody)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
@@ -112,6 +165,7 @@ func EditAnime(repo repository.AnimeRepository) gin.HandlerFunc {
 		}
 
 		anime, err := reqBody.ParseRequestWithID(uuid)
+		anime.UserID = userIDUUID
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{

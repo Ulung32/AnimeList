@@ -6,7 +6,7 @@ import (
 )
 
 type AnimeRepository interface {
-	GetAllAnime(ctx context.Context) ([]model.Anime, error)
+	GetAllAnime(ctx context.Context, userID string) ([]model.Anime, error)
 	AddAnime(ctx context.Context, anime model.Anime) error
 	EditAnime(ctx context.Context, anime model.Anime) error
 	DeleteAnime(ctx context.Context, ID string) (model.Anime, error)
@@ -25,10 +25,11 @@ func (repo Repository) GetAnime(ctx context.Context, ID string) (model.Anime, er
 	return anime, nil
 }
 
-func (repo Repository) GetAllAnime(ctx context.Context) ([]model.Anime, error) {
+func (repo Repository) GetAllAnime(ctx context.Context, userID string) ([]model.Anime, error) {
 	var animes []model.Anime
 
-	err := repo.DB.Find(&animes).Error
+	println(userID)
+	err := repo.DB.Find(&animes, "USER_ID = ?", userID).Error
 
 	if err != nil {
 		return nil, err
