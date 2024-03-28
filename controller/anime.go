@@ -2,6 +2,7 @@ package controller
 
 import (
 	requestparser "AnimeList/RequestParser"
+	responseparser "AnimeList/ResponseParser"
 	repository "AnimeList/repository"
 	"fmt"
 	"net/http"
@@ -9,6 +10,27 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
+
+func GetAnime(repo repository.AnimeRepository) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ID := ctx.Param("id")
+
+		anime, err := repo.GetAnime(ctx, ID)
+		if err != nil {
+			println(err.Error())
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "couldnt retrive data"})
+			return
+		}
+
+		var res responseparser.AnimeResponse
+
+		res.ParseAnime(anime)
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"data": res,
+		})
+	}
+}
 
 func GetAllAnime(repo repository.AnimeRepository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -19,7 +41,14 @@ func GetAllAnime(repo repository.AnimeRepository) gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, gin.H{"data": animes})
+		animeResponses := make([]responseparser.AnimeResponse, len(animes))
+		for i, anime := range animes {
+			var animeResponse responseparser.AnimeResponse
+			animeResponse.ParseAnime(anime)
+			animeResponses[i] = animeResponse
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"data": animeResponses})
 	}
 }
 
@@ -121,8 +150,12 @@ func DeleteAnime(repo repository.AnimeRepository) gin.HandlerFunc {
 			return
 		}
 
+		var res responseparser.AnimeResponse
+
+		res.ParseAnime(deletedAnime)
+
 		ctx.JSON(http.StatusOK, gin.H{
-			"data": deletedAnime,
+			"data": res,
 		})
 	}
 }

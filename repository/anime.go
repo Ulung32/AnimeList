@@ -10,6 +10,19 @@ type AnimeRepository interface {
 	AddAnime(ctx context.Context, anime model.Anime) error
 	EditAnime(ctx context.Context, anime model.Anime) error
 	DeleteAnime(ctx context.Context, ID string) (model.Anime, error)
+	GetAnime(ctx context.Context, ID string) (model.Anime, error)
+}
+
+func (repo Repository) GetAnime(ctx context.Context, ID string) (model.Anime, error) {
+	var anime model.Anime
+
+	err := repo.DB.First(&anime, "ID = ?", ID).Error
+
+	if err != nil {
+		return model.Anime{}, err
+	}
+
+	return anime, nil
 }
 
 func (repo Repository) GetAllAnime(ctx context.Context) ([]model.Anime, error) {

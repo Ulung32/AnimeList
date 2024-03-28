@@ -46,7 +46,7 @@ func Register(repo repository.UserRepository) gin.HandlerFunc {
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
-			"message": "success creating user with ID" + userSave.ID.String(),
+			"message": "success creating user with ID " + userSave.ID.String(),
 		})
 	}
 }
