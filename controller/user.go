@@ -89,8 +89,9 @@ func Login(repo repository.UserRepository) gin.HandlerFunc {
 		}
 
 		jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"id":  user.ID,
-			"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+			"id":       user.ID,
+			"username": user.Username,
+			"exp":      time.Now().Add(time.Hour * 24 * 30).Unix(),
 		})
 
 		tokenString, err := jwtToken.SignedString([]byte(config.Cfg.SecretKey))
@@ -103,7 +104,7 @@ func Login(repo repository.UserRepository) gin.HandlerFunc {
 		}
 
 		ctx.SetSameSite(http.SameSiteLaxMode)
-		ctx.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+		ctx.SetCookie("Authorization", tokenString, 3600*24*30, "/", "localhost", false, false)
 		ctx.JSON(http.StatusOK, gin.H{
 			"token": tokenString,
 		})

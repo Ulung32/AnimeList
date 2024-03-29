@@ -15,7 +15,9 @@ func RequireAuth(ctx *gin.Context) {
 
 	println(tokenString)
 	if err != nil {
-		ctx.AbortWithStatus(http.StatusUnauthorized)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "error parsing token",
+		})
 		return
 	}
 
@@ -38,7 +40,9 @@ func RequireAuth(ctx *gin.Context) {
 	}
 
 	if float64(time.Now().Unix()) > claims["exp"].(float64) {
-		ctx.AbortWithStatus(http.StatusUnauthorized)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "expired token",
+		})
 		return
 	}
 

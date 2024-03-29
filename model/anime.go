@@ -8,13 +8,13 @@ import (
 )
 
 type Anime struct {
-	ID         uuid.UUID `gorm:"type:uuid;primaryKey"`
-	Title      string
-	Synopsis   string
-	RelaseDate time.Time
-	UserID     uuid.UUID
-	User       User `gorm:"foreignKey:UserID"`
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	DeletedAt  gorm.DeletedAt
+	ID          uuid.UUID `gorm:"type:uuid;primaryKey"`
+	Title       string
+	Synopsis    string
+	ReleaseDate time.Time
+	UserID      uuid.UUID
+	User        User `gorm:"foreignKey:UserID"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt
 }

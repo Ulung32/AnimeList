@@ -3,7 +3,7 @@ package main
 import (
 	"AnimeList/config"
 	"AnimeList/model"
-	repository "AnimeList/repository"
+	"AnimeList/repository"
 	"AnimeList/route"
 	"fmt"
 	"log"
@@ -19,6 +19,7 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot load config: ", err)
 	}
+
 	fmt.Println(config.Cfg.DBUrl)
 
 	db, err := gorm.Open(postgres.Open(config.Cfg.DBUrl), &gorm.Config{})
@@ -28,21 +29,27 @@ func main() {
 
 	r := gin.Default()
 
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "*"}, // Change to specific origins if needed
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type"},
-		AllowCredentials: true,
-	}))
+	// CORS configuration
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"http://localhost:5173"}
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
+	corsConfig.AllowHeaders = []string{"Origin", "Content-Type"}
+	corsConfig.AllowCredentials = true
 
+	r.Use(cors.New(corsConfig))
+
+	// Auto migration of database models
 	db.AutoMigrate(&model.Anime{}, &model.User{})
+
+	// Initialize repository
 	repo := repository.NewRepository(db)
 
+	// Setup routes
 	route.Routes(r, repo)
 
+	// Start Gin server
 	err = r.Run()
 	if err != nil {
 		return
 	}
-
 }
